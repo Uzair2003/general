@@ -1,0 +1,2 @@
+# general
+Collection of projects
