@@ -1,32 +1,48 @@
 # URL Shortner Using Cuttly
 # Uzair
 
-# pip install requests
-import requests 
+import requests
 
-def shorten_link(full_link, link_name):
+# Function to shorten a URL using Cuttly
+def shorten_url(full_url, custom_name):
 
-    # Link the program to my Cuttly API 
-    API_KEY = "89e6ba1ef5d2abf9fb166a1ed151791ae8bd0"
-    BASE_URL = "https://cutt.ly/api/api.php"
+    api_key = "89e6ba1ef5d2abf9fb166a1ed151791ae8bd0" 
+    base_url = "https://cutt.ly/api/api.php"
 
-    payload = {"key": API_KEY, "short": full_link, "name": link_name}
-    request = requests.get(BASE_URL, params = payload)
-    data = request.json()
-
-    print("\n")
+    # Payload for the API request
+    payload = {
+        "key": api_key,
+        "short": full_url,
+        "name": custom_name
+    }
 
     try:
-        title = data["url"]["title"]
-        short_link = data["url"]["shortLink"]
+        response = requests.get(base_url, params=payload)
+        # Raise an error for bad HTTP status codes   
+        response.raise_for_status() 
 
-        print("\33[32mTitle:\33[0m", title)
-        print("\33[32mShortened Link:\33[0m", short_link)
+        data = response.json()
+        url_status = data["url"]["status"]
 
-    except:
-        status = data["url"]["title"]
-        print("Error Status:", status)
+        # Check if URL shortening was successful
+        # Status 7 indicates successful URL shortening
+        if url_status == 7:  
+            title = data["url"]["title"]
+            short_link = data["url"]["shortLink"]
+            return f"Title: {title}\nShortened Link: {short_link}"
+        else:
+            return f"Error: Unable to shorten URL. Status code: {url_status}"
 
-link = input("\33[33mEnter A Link: \33[0m")
-name = input("\33[33mGive Your Link A Name(Leave Blank For Random Name): \33[0m")
-shorten_link(link, name)
+    except requests.RequestException as e:
+        return f"Error: An exception occurred - {e}"
+
+# Main function to drive the program
+def main():
+    user_url = input("Enter a URL to shorten: ")
+    custom_name = input("Enter a custom name for the shortened URL (leave blank for a random name): ")
+
+    shortened_url = shorten_url(user_url, custom_name)
+    print(shortened_url)
+
+if __name__ == "__main__":
+    main()
