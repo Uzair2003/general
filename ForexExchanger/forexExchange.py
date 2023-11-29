@@ -1,28 +1,45 @@
 # Live FOREX Exchanger
 # Uzair
 
-# pip install forex-python
 from forex_python.converter import CurrencyRates
 from datetime import datetime
 
-# Retrieve the current date and time 
-time = datetime.now()
-dt_string = time.strftime("%d/%m/%Y %H:%M:%S")
+# Function to print the current exchange rates for a base currency against multiple target currencies
+def get_current_exchange_rates(base_currency, target_currencies):
 
-currency = CurrencyRates()
+    # Displaying the current time
+    print(f"-------- Current Rate For 1.0 {base_currency} As Of {datetime.now().strftime('%d/%m/%Y %H:%M:%S')} --------")
+    
+    # Iterating through each target currency and printing its exchange rate against the base currency
+    for currency in target_currencies:
+        rate = currency_rates.get_rate(base_currency, currency)
+        print(f"{rate} {currency}")
+    print("--------------------------------------------------------------------\n")
 
-# Print the current exchange rate for the EURO agaisnt multiple other currencies
-print("\33[32m-------- Current Rate For 1.0 EUR As Of", dt_string, "--------\33[0m")
-countries = ['USD','GBP','JPY','CAD','AUD']
-for i in countries:
-    print(currency.get_rate('EUR', i), i)
-print("\33[32m--------------------------------------------------------------------\n\33[0m")
+# Function to convert a given amount from one currency to another
+def convert_currency(amount, from_currency, to_currency):
 
-# Take In User Input 
-amount = int(input("Enter An Amount To Convert: "))
-from_curr = input("From Currency(e.g. EUR,USD,GBP): ").upper()
-to_curr = input("To Currency(e.g. EUR,USD,GBP): ").upper()
+    return currency_rates.convert(from_currency, to_currency, amount)
 
-# Pass on the 3 inputted variables to be computed
-result = currency.convert(from_curr, to_curr, amount)
-print("Conversion Amount:", round(result, 3), to_curr)
+# Main function
+def main():
+
+    # List of target currencies
+    target_currencies = ['USD', 'GBP', 'JPY', 'CAD', 'AUD']
+    
+    # Displaying current exchange rates for the base currency 'EUR'
+    get_current_exchange_rates('EUR', target_currencies)
+
+    # Taking user input for the amount and currency of conversion
+    amount = float(input("Enter an amount to convert: "))
+    from_currency = input("From Currency (e.g., EUR, USD, GBP): ").upper()
+    to_currency = input("To Currency (e.g., EUR, USD, GBP): ").upper()
+
+    # Performing the conversion and displaying the result
+    result = convert_currency(amount, from_currency, to_currency)
+    print(f"Conversion Amount: {round(result, 3)} {to_currency}")
+
+# Ensures the script runs only when executed directly and not when imported as a module
+if __name__ == "__main__":
+    currency_rates = CurrencyRates()  
+    main() 
